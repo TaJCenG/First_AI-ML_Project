@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movie Recommendation System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 p-6">
+    <h1 class="text-2xl font-semibold text-center text-blue-700 mb-8">Movie Recommendation System</h1>
+
+    <div id="preferences-container" class="bg-white rounded-lg shadow-md p-6 mb-8">
+        <h2 class="text-xl font-semibold text-gray-800 mb-4">Select Your Preferences</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="mb-4">
+                <label for="genre-select" class="block text-gray-700 text-sm font-bold mb-2">Genres:</label>
+                <select id="genre-select" class="shadow appearance-none border rounded w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                    <option value="">All Genres</option>
+                    <option value="Sci-Fi">Sci-Fi</option>
+                    <option value="Action">Action</option>
+                    <option value="Thriller">Thriller</option>
+                    <option value="Drama">Drama</option>
+                    <option value="Crime">Crime</option>
+                    <option value="Mystery">Mystery</option>
+                </select>
+            </div>
+            <div class="mb-4">
+                <label for="director-select" class="block text-gray-700 text-sm font-bold mb-2">Directors:</label>
+                <select id="director-select" class="shadow appearance-none border rounded w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                    <option value="">All Directors</option>
+                    <option value="Christopher Nolan">Christopher Nolan</option>
+                </select>
+            </div>
+            <div class="mb-4">
+                <label for="actor-select" class="block text-gray-700 text-sm font-bold mb-2">Actors:</label>
+                <select id="actor-select" class="shadow appearance-none border rounded w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                    <option value="">All Actors</option>
+                    <option value="Leonardo DiCaprio">Leonardo DiCaprio</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <div id="recommendation-container" class="bg-white rounded-lg shadow-md p-6">
+        <h2 class="text-xl font-semibold text-gray-800 mb-4">Recommended Movies</h2>
+        <ul id="movie-list" class="space-y-3">
+            </ul>
+    </div>
+
+    <script>
+        const movies = [
+            {
+                title: "Inception",
+                genres: ["Sci-Fi", "Action", "Thriller"],
+                director: "Christopher Nolan",
+                actors: ["Leonardo DiCaprio", "Joseph Gordon-Levitt", "Elliot Page"],
+                rating: 8.8,
+                description: "A thief who steals corporate secrets through the use of dream-sharing technology is given the impossible task of planting an idea into the mind of a CEO.",
+                poster: "https://m.media-amazon.com/images/M/MV5BMjAxMzY3NjcxNF5BMl5BanBnXkFtZTcwOTc0ODMwMQ@@._V1_SX300.jpg"
+            },
+            {
+                title: "The Dark Knight",
+                genres: ["Action", "Crime", "Drama"],
+                director: "Christopher Nolan",
+                actors: ["Christian Bale", "Heath Ledger", "Aaron Eckhart"],
+                rating: 9.0,
+                description: "When the menace known as the Joker wreaks havoc and chaos on the people of Gotham, Batman must accept one of the greatest psychological tests of his ability to fight injustice.",
+                poster: "https://m.media-amazon.com/images/M/MV5BMTMxNTMwODM0NF5BMl5BanBnXkFtZTcwODAyMTk2Mw@@._V1_SX300.jpg"
+            },
+            {
+                title: "Shutter Island",
+                genres: ["Mystery", "Thriller"],
+                director: "Martin Scorsese",
+                actors: ["Leonardo DiCaprio", "Emily Mortimer", "Mark Ruffalo"],
+                rating: 8.2,
+                description: "In 1954, a U.S. Marshal investigates the disappearance of a patient from a hospital for the criminally insane.",
+                poster: "https://m.media-amazon.com/images/M/MV5BMTM2MDk5MzY2Ml5BMl5BanBnXkFtZTcwODIyMjM0Nw@@._V1_SX300.jpg"
+            },
+             {
+                title: "Dunkirk",
+                genres: ["Action", "Drama", "History"],
+                director: "Christopher Nolan",
+                actors: ["Fionn Whitehead", "Tom Hardy", "Harry Styles"],
+                rating: 7.8,
+                description: "Allied soldiers from Belgium, Britain and France are surrounded by the German army, and the evacuation from Dunkirk during a fierce battle in World War II takes place.",
+                poster: "https://m.media-amazon.com/images/M/MV5BN2YyZjQxMjMtNmY5Mi00M2Y4LWE3N2MtMDk0NjY2M2Y1M2Y1XkEyXkFqcGdeQXVyMjY5NTMwMDU@._V1_SX300.jpg"
+            },
+            {
+                title: "The Wolf of Wall Street",
+                genres: ["Biography", "Crime", "Drama"],
+                director: "Martin Scorsese",
+                actors: ["Leonardo DiCaprio", "Jonah Hill", "Margot Robbie"],
+                rating: 8.2,
+                description: "Based on the true story of Jordan Belfort, from his rise to a wealthy stockbroker living a high life to his fall involving crime, corruption and the federal government.",
+                poster: "https://m.media-amazon.com/images/M/MV5BMjIxMjgxNTMwN15BMl5BanBnXkFtZTgwNjkwOTMxMzA@._V1_SX300.jpg"
+            }
+        ];
+
+        function getSelectedValues() {
+            const genre = document.getElementById("genre-select").value;
+            const director = document.getElementById("director-select").value;
+            const actor = document.getElementById("actor-select").value;
+            return { genre, director, actor };
+        }
+
+        function filterMovies(movies, preferences) {
+            const { genre, director, actor } = preferences;
+            return movies.filter(movie => {
+                return (
+                    (!genre || movie.genres.includes(genre)) &&
+                    (!director || movie.director === director) &&
+                    (!actor || movie.actors.includes(actor))
+                );
+            });
+        }
+
+        function displayMovies(filteredMovies) {
+            const movieList = document.getElementById("movie-list");
+            movieList.innerHTML = ""; // Clear previous results
+
+            if (filteredMovies.length === 0) {
+                movieList.innerHTML = "<li class='text-gray-500'>No movies found matching your preferences.</li>";
+                return;
+            }
+
+            filteredMovies.forEach(movie => {
+                const movieItem = document.createElement("li");
+                movieItem.classList.add("bg-white", "rounded-lg", "shadow-md", "p-4", "flex", "items-center", "gap-4");
+
+                const moviePoster = document.createElement("img");
+                moviePoster.src = movie.poster;
+                moviePoster.alt = movie.title + " poster";
+                moviePoster.classList.add("w-24", "h-36", "object-cover", "rounded-md");
+                movieItem.appendChild(moviePoster);
+
+                const movieDetails = document.createElement("div");
+                movieDetails.classList.add("flex-1");
+
+                const movieTitle = document.createElement("h3");
+                movieTitle.textContent = movie.title;
+                movieTitle.classList.add("text-xl", "font-semibold", "text-gray-800", "mb-2");
+                movieDetails.appendChild(movieTitle);
+
+                const movieDescription = document.createElement("p");
+                movieDescription.textContent = movie.description;
+                movieDescription.classList.add("text-gray-600", "mb-2");
+                movieDetails.appendChild(movieDescription);
+
+                const movieRating = document.createElement("p");
+                movieRating.textContent = `Rating: ${movie.rating}`;
+                movieRating.classList.add("text-gray-700", "font-bold");
+                movieDetails.appendChild(movieRating);
+
+                const movieGenres = document.createElement("p");
+                movieGenres.textContent = `Genres: ${movie.genres.join(", ")}`;
+                movieGenres.classList.add("text-gray-500", "text-sm");
+                movieDetails.appendChild(movieGenres);
+
+                movieItem.appendChild(movieDetails);
+                movieList.appendChild(movieItem);
+            });
+        }
+
+        function recommendMovies() {
+            const preferences = getSelectedValues();
+            const filteredMovies = filterMovies(movies, preferences);
+            displayMovies(filteredMovies);
+        }
+
+        // Initial display of all movies
+        displayMovies(movies);
+
+        // Event listeners for changes in dropdowns
+        document.getElementById("genre-select").addEventListener("change", recommendMovies);
+        document.getElementById("director-select").addEventListener("change", recommendMovies);
+        document.getElementById("actor-select").addEventListener("change", recommendMovies);
+    </script>
+</body>
+</html>
