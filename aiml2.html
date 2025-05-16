@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Rule-Based Movie Recommendation System</title>
+<style>
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #121212;
+    color: #e0e0e0;
+    margin: 0;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+  }
+  h1 {
+    color: #00bfa5;
+    margin-bottom: 0.5em;
+  }
+  .container {
+    background-color: #1e1e1e;
+    padding: 20px 30px;
+    border-radius: 12px;
+    max-width: 480px;
+    width: 100%;
+    box-shadow: 0 8px 20px rgba(0,191,165,0.3);
+  }
+  label {
+    display: block;
+    margin: 15px 0 8px 0;
+    font-weight: 600;
+    color: #80cbc4;
+  }
+  select, button {
+    width: 100%;
+    padding: 10px;
+    font-size: 1rem;
+    border-radius: 8px;
+    border: none;
+    background-color: #00bfa5;
+    color: #121212;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  select {
+    background-color: #263238;
+    color: #e0e0e0;
+  }
+  select:focus {
+    outline: none;
+    background-color: #37474f;
+  }
+  button:hover {
+    background-color: #009f8c;
+  }
+  .output {
+    margin-top: 20px;
+    padding: 15px 20px;
+    background-color: #263238;
+    border-radius: 8px;
+    min-height: 80px;
+    white-space: pre-wrap;
+  }
+</style>
+</head>
+<body>
+  <h1>Rule-Based Movie Recommendation System</h1>
+  <div class="container">
+    <form id="movieForm">
+      <label for="genre">Select Genre:</label>
+      <select id="genre" required>
+        <option value="" disabled selected>Select a genre</option>
+        <option value="action">Action</option>
+        <option value="comedy">Comedy</option>
+        <option value="romance">Romance</option>
+        <option value="horror">Horror</option>
+        <option value="sci-fi">Sci-Fi</option>
+        <option value="drama">Drama</option>
+      </select>
+
+      <label for="mood">Select Mood:</label>
+      <select id="mood" required>
+        <option value="" disabled selected>Select a mood</option>
+        <option value="exciting">Exciting</option>
+        <option value="light-hearted">Light-hearted</option>
+        <option value="emotional">Emotional</option>
+        <option value="scary">Scary</option>
+        <option value="thought-provoking">Thought-provoking</option>
+        <option value="serious">Serious</option>
+      </select>
+
+      <button type="submit">Get Recommendations</button>
+    </form>
+
+    <div class="output" id="output"></div>
+  </div>
+
+  <script>
+    const recommendations = [
+      { title: "Mad Max: Fury Road", genre: "action", mood: "exciting" },
+      { title: "John Wick", genre: "action", mood: "exciting" },
+      { title: "The Hangover", genre: "comedy", mood: "light-hearted" },
+      { title: "Superbad", genre: "comedy", mood: "light-hearted" },
+      { title: "The Notebook", genre: "romance", mood: "emotional" },
+      { title: "La La Land", genre: "romance", mood: "emotional" },
+      { title: "The Conjuring", genre: "horror", mood: "scary" },
+      { title: "Get Out", genre: "horror", mood: "scary" },
+      { title: "Inception", genre: "sci-fi", mood: "thought-provoking" },
+      { title: "Interstellar", genre: "sci-fi", mood: "thought-provoking" },
+      { title: "The Shawshank Redemption", genre: "drama", mood: "serious" },
+      { title: "Forrest Gump", genre: "drama", mood: "emotional" }
+    ];
+
+    document.getElementById('movieForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const selectedGenre = document.getElementById('genre').value;
+      const selectedMood = document.getElementById('mood').value;
+      const output = document.getElementById('output');
+
+      // Rule-based filtering: recommend movies matching both genre and mood
+      const filteredMovies = recommendations.filter(movie =>
+        movie.genre === selectedGenre && movie.mood === selectedMood
+      );
+
+      if (filteredMovies.length > 0) {
+        let response = "Based on your preferences, we recommend:\n\n";
+        filteredMovies.forEach(m => {
+          response += `- ${m.title} [${capitalize(m.genre)} | ${m.mood}]\n`;
+        });
+        output.textContent = response;
+      } else {
+        output.textContent = "Sorry, no movies found matching your preferences. Try different options!";
+      }
+    });
+
+    function capitalize(str) {
+      return str.charAt(0).toUpperCase() + str.slice(1);
+    }
+  </script>
+</body>
+</html>
+
